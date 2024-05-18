@@ -1,0 +1,32 @@
+/* Styles for the footer background container */
+.footerbgc {
+    height: 10vh; /* 10% of viewport height */
+    background-color: #253849; /* Dark blue background */
+    display: flex; /* Use flexbox for layout */
+    align-items: center; /* Center items vertically */
+}
+
+/* Styles for the images inside the footer */
+.footimg {
+    margin-left: 25px; /* Adds left margin to space out images */
+}
+
+/* Styles for the "GO BACK TO DEMOS" button */
+.teleport {
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    color: white; /* White text color */
+    border: 0.1px solid white; /* Thin white border */
+    border-radius: 50px; /* Rounded corners */
+    width: 177px; /* Fixed width */
+    height: 31px; /* Fixed height */
+    margin-left: 55vw; /* Margin to push the button to the right side of the screen */
+}
+
+/* Media query for screens with a max width of 1206px */
+@media only screen and (max-width: 1206px) {
+    .teleport {
+        display: none; /* Hide the "GO BACK TO DEMOS" button on smaller screens */
+    }
+}
