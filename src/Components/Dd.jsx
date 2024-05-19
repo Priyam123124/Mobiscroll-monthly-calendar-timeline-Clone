@@ -21,6 +21,7 @@ const Dd = () => {
     const [m1, setM1] = useState(0); // State for end minute
   const resizeStartX = useRef(null); // Ref for storing initial X position during resize
   const initialWidthPos = useRef(null); // Ref for storing initial width position
+  const prevwid = useRef(width1);
 
     // Generate the correct number of days for the current month
     const extraDivs = Array.from({ length: month % 2 === 0 && month !== 2 ? 30 : month % 2 === 0 && month === 2 ? 28 : month % 2 !== 0 && month === 2 ? 29 : 31 }, (_, index) => {
@@ -49,6 +50,11 @@ const Dd = () => {
         localStorage.setItem('cvalue', JSON.stringify(cvalue));
     }, [cvalue]);
 
+    useEffect(()=>{
+        const wid = localStorage.getItem(`${class123}`)
+        setWidth1(wid)
+    }, [class123])
+
     // Handle click to add a new event
     const handleClick = (classes) => {
         if (!cvalue.some(item => item.classes === classes)) {
@@ -74,6 +80,7 @@ const Dd = () => {
         handleClick(classes);
         resizeStartX.current = event.clientX;
         initialWidthPos.current = width1;
+        prevwid.current = width1;
     
         // Define the move and up handlers
         const handleMouseMove = (e) => onMouseMoveAdd(e, classes);
@@ -132,11 +139,9 @@ const Dd = () => {
 
       localStorage.setItem(`${classs}2`, JSON.stringify(time));
       localStorage.setItem(classs, newWidth);
-        //console.log(`New Width: ${newWidth}`); // Log width during movement
     };
 
     useEffect(()=>{
-        console.log(h1, m1)
         const time = {
             hour: h1,
             min: m1
