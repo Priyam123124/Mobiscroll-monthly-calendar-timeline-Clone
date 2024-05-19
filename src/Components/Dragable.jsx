@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import WebContext from '../context/WebContext';
 
-function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, children, position, ih, im, fh, fm, upwid, hm, mh }) {
+function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, children, position, ih, im, fh, fm, upwid, hm, mh, num }) {
   const context = useContext(WebContext);
   const {widflag, setWidflag} = context
   const [width, setWidth] = useState(initialWidth); // State for button width
@@ -20,6 +20,7 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
 
   //update the end time while adding a new event and dragging the event
   useEffect(()=>{
+    if(num == 0){
     const time = localStorage.getItem(`${classs}2`)
     const time2 = JSON.parse(time)
 
@@ -27,6 +28,7 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
     if(time2){
     setH1(time2.hour)
     setM1(time2.min)
+    }
     }
   },[width])
 
