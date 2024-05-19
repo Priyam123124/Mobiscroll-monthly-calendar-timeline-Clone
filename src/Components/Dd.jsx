@@ -179,6 +179,7 @@ const Dd = () => {
             const tm2 = localStorage.getItem(`${classes}2`);
             const it = tm1 ? JSON.parse(tm1) : {};
             const ft = tm2 ? JSON.parse(tm2) : {};
+            const num = localStorage.getItem(`${classes}4`)
             //const adwid = localStorage.getItem(`${classes}5`)
 
             const foundObject = cvalue.find(item => item.classes === classes);
@@ -199,6 +200,7 @@ const Dd = () => {
                     upwid={width1}
                     hm={h1}
                     mh={m1}
+                    num={num}
                 >
                     New Event <img onClick={() => { delThis(classes) }} src={deleteIcon} />
                 </ResizableButton>
