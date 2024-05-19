@@ -18,6 +18,18 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
   const [h1, setH1] = useState(fh || 1); // State for end hour
   const [m1, setM1] = useState(fm || 0); // State for end minute
 
+  //update the end time while adding a new event and dragging the event
+  useEffect(()=>{
+    const time = localStorage.getItem(`${classs}2`)
+    const time2 = JSON.parse(time)
+
+    console.log(`${classs}2`)
+    if(time2){
+    setH1(time2.hour)
+    setM1(time2.min)
+    }
+  },[width])
+
   // Load width and position from localStorage on initial render
   useEffect(() => {
     const storedWidth = localStorage.getItem(classs);
@@ -59,12 +71,6 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
       localStorage.setItem(`${classs}3`, JSON.stringify(time2));
     }
   },[h,m]);
-
-  //update end time when element is created for the first time
-  useEffect(()=>{
-    setH1(hm)
-    setM1(mh)
-  },[hm, mh])
 
   // Handle the start of resizing
   const onMouseDownResize = (event) => {
