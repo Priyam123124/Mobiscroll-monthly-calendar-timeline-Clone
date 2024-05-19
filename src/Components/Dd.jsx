@@ -51,8 +51,11 @@ const Dd = () => {
     }, [cvalue]);
 
     useEffect(()=>{
-        const wid = localStorage.getItem(`${class123}`)
-        setWidth1(wid)
+        const storedWidth = localStorage.getItem(class123);
+        console.log(class123)
+    if (storedWidth) {
+      setWidth(Number(storedWidth));
+    }
     }, [class123])
 
     // Handle click to add a new event
@@ -155,6 +158,7 @@ const Dd = () => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
         localStorage.setItem(`${classes}4`, 1)
+        setWidth1(72)
     };
     
     // Delete a specific event
