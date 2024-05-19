@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import WebContext from '../context/WebContext';
 import ResizableButton from './Dragable';
 import deleteIcon from './delete.svg';
@@ -6,16 +6,21 @@ import add from '../add.png';
 
 const Dd = () => {
     const context = useContext(WebContext);
-    const { month, year, setShowAlert, iwidth } = context;
+    const { month, year, setShowAlert, iwidth, width, setWidth, widflag, setWidflag } = context;
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     // State to manage calendar events and other UI states
     const [cvalue, setCvalue] = useState(JSON.parse(localStorage.getItem('cvalue')) || []);
-    const [color, setColor] = useState('');
+    const [width1, setWidth1] = useState(50)
+    const [class123, setClass123] = useState('')
     const [moreres, setMoreres] = useState([]);
     const [rowno, setRowno] = useState(16);
     const [newres, setNewres] = useState(1);
     const [latest, setLatest] = useState('');
+    const [h1, setH1] = useState(1); // State for end hour
+    const [m1, setM1] = useState(0); // State for end minute
+  const resizeStartX = useRef(null); // Ref for storing initial X position during resize
+  const initialWidthPos = useRef(null); // Ref for storing initial width position
 
     // Generate the correct number of days for the current month
     const extraDivs = Array.from({ length: month % 2 === 0 && month !== 2 ? 30 : month % 2 === 0 && month === 2 ? 28 : month % 2 !== 0 && month === 2 ? 29 : 31 }, (_, index) => {
@@ -61,6 +66,92 @@ const Dd = () => {
         }
     };
 
+    const onMouseDownAdd = (event, classes) => {
+        if(!localStorage.getItem(`${classes}4`)){
+        localStorage.setItem(`${classes}4`, 0)
+        const num = localStorage.getItem(`${classes}4`)
+        if(num==0){
+        handleClick(classes);
+        resizeStartX.current = event.clientX;
+        initialWidthPos.current = width1;
+    
+        // Define the move and up handlers
+        const handleMouseMove = (e) => onMouseMoveAdd(e, classes);
+        const handleMouseUp = () => onMouseUpAdd(handleMouseMove, classes, handleMouseUp);
+    
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+        }
+    }
+    };
+    
+    const onMouseMoveAdd = (event, classs) => {
+        const deltaX = event.clientX - resizeStartX.current;
+        const newWidth = Math.min(Math.max(width1 + deltaX, 50), 10000000);
+        setWidth1(newWidth);
+        setClass123(classs)
+
+        const pixelsPerHour = 3; // 24 hours over 72 pixels
+    const pixelsPerMinute = pixelsPerHour / 60; // 60 minutes in an hour
+
+    const mChange = Math.floor(deltaX / pixelsPerMinute);
+    const hChange = Math.floor(deltaX / pixelsPerHour);
+
+    // Update end time based on resize
+    if (mChange !== 0) {
+      setM1(prevM1 => {
+        let newM1 = prevM1 + mChange;
+        while (newM1 >= 60) {
+          newM1 -= 60;
+          setH1(prevH1 => (prevH1 < 24 ? prevH1 + 1 : 1));
+        }
+        while (newM1 < 0) {
+          newM1 += 60;
+          setH1(prevH1 => (prevH1 > 1 ? prevH1 - 1 : 24));
+        }
+        return newM1;
+      });
+    }
+
+    if (hChange !== 0) {
+      setH1(prevH1 => {
+        let newH1 = prevH1 + hChange;
+        if (newH1 > 24) {
+          newH1 = 1;
+        } else if (newH1 < 1) {
+          newH1 = 24;
+        }
+        return newH1;
+      });
+    }
+
+    const time = {
+      hour: h1,
+      min: m1
+    };
+
+      localStorage.setItem(`${classs}2`, JSON.stringify(time));
+      localStorage.setItem(classs, newWidth);
+        //console.log(`New Width: ${newWidth}`); // Log width during movement
+    };
+
+    useEffect(()=>{
+        console.log(h1, m1)
+        const time = {
+            hour: h1,
+            min: m1
+          };
+      
+        localStorage.setItem(`${class123}2`, JSON.stringify(time));
+    }, [h1, m1])
+    
+    
+    const onMouseUpAdd = (handleMouseMove, classes, handleMouseUp) => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        localStorage.setItem(`${classes}4`, 1)
+    };
+    
     // Delete a specific event
     const delThis = (classes) => {
         const filtered = cvalue.filter(e => e.classes !== classes);
@@ -73,6 +164,7 @@ const Dd = () => {
         localStorage.removeItem(`${classes}1`);
         localStorage.removeItem(`${classes}2`);
         localStorage.removeItem(`${classes}3`);
+        localStorage.removeItem(`${classes}4`);
     };
 
     // Generate the calendar grid for a specific resource
@@ -87,6 +179,7 @@ const Dd = () => {
             const tm2 = localStorage.getItem(`${classes}2`);
             const it = tm1 ? JSON.parse(tm1) : {};
             const ft = tm2 ? JSON.parse(tm2) : {};
+            //const adwid = localStorage.getItem(`${classes}5`)
 
             const foundObject = cvalue.find(item => item.classes === classes);
             const coloring = foundObject ? foundObject.color : '';
@@ -103,13 +196,16 @@ const Dd = () => {
                     im={it.min}
                     fh={ft.hour}
                     fm={ft.min}
+                    upwid={width1}
+                    hm={h1}
+                    mh={m1}
                 >
                     New Event <img onClick={() => { delThis(classes) }} src={deleteIcon} />
                 </ResizableButton>
             ) : "";
 
             divs.push(
-                <div key={i} onClick={() => handleClick(classes)} className={classes} style={{ border: "1px solid black", minWidth: "72px", height: "60px" }}>
+                <div key={i} onMouseDown={(e)=>{onMouseDownAdd(e, classes)}} className={classes} style={{ border: "1px solid black", minWidth: "72px", height: "60px" }}>
                     {content}
                 </div>
             );
