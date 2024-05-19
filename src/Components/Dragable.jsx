@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import WebContext from '../context/WebContext';
 
-function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, children, position, ih, im, fh, fm }) {
+function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, children, position, ih, im, fh, fm, upwid, hm, mh }) {
   const context = useContext(WebContext);
+  const {widflag, setWidflag} = context
   const [width, setWidth] = useState(initialWidth); // State for button width
   const buttonRef = useRef(null); // Ref for the button element
   const dragStartX = useRef(null); // Ref for storing initial X position during drag
@@ -28,7 +29,14 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
     if (storedPos) {
       setPos(Number(storedPos));
     }
-  }, [classs]);
+  }, [classs, upwid]);
+
+  useEffect(()=>{
+    const storedWidth = localStorage.getItem(classs);
+    if (storedWidth) {
+      setWidth(Number(storedWidth));
+    }
+  },[localStorage.getItem(classs)])
 
   // Update localStorage with end time when h1 or m1 changes
   useEffect(()=>{
@@ -51,6 +59,12 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
       localStorage.setItem(`${classs}3`, JSON.stringify(time2));
     }
   },[h,m]);
+
+  //update end time when element is created for the first time
+  useEffect(()=>{
+    setH1(hm)
+    setM1(mh)
+  },[hm, mh])
 
   // Handle the start of resizing
   const onMouseDownResize = (event) => {
@@ -224,7 +238,7 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
 
   return (
     <div style={{backgroundColor: colour, display: 'flex', justifyContent: "center", alignItems: "center", width: `${width+4}px`, position: "relative", left: `${pos}px`,  height: "60px", zIndex: "1"}}>
-      <div
+      <div 
       ref={buttonRef}
       style={{width: "2px", height: "59px", zIndex: "1", backgroundColor: colour}}
       // onMouseDown={onMouseDownResize}
@@ -232,13 +246,13 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
       id='child'
     >
     </div>
-      <button style={{ display: "flex", fontSize: "8px", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: colour, width: `${width}px`}} onMouseDown={onMouseDownDrag}>
+      <button  style={{ display: "flex", fontSize: "8px", flexDirection: "column", justifyContent: "center", alignItems: "center", backgroundColor: colour, width: `${width}px`}} onMouseDown={onMouseDownDrag}>
         <div style={{display: "flex", justifyContent: 'center', alignItems: "center"}}>
         {children}
         </div>
         {h} : {m} - {h1} :{m1}
       </button>
-    <div
+    <div 
       ref={buttonRef}
       style={{width: "2px", height: "59px", zIndex: "1", backgroundColor: colour, cursor: "e-resize"}}
       onMouseDown={onMouseDownResize}
