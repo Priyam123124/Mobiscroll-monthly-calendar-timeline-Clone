@@ -61,7 +61,7 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
     if(time){
       localStorage.setItem(`${classs}2`, JSON.stringify(time));
     }
-  },[h1,m1]);
+  },[h1,m1,position]);
 
   // Update localStorage with start time when h or m changes
   useEffect(()=>{
@@ -72,7 +72,7 @@ function ResizableButton({ initialWidth, minWidth, maxWidth, classs, colour, chi
     if(time2){
       localStorage.setItem(`${classs}3`, JSON.stringify(time2));
     }
-  },[h,m]);
+  },[h,m,position]);
 
   // Handle the start of resizing
   const onMouseDownResize = (event) => {
